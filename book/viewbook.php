@@ -20,8 +20,6 @@ $genres = $bookObj->getGenres();
 <body>
     <h1>Book List</h1>
     <button><a href="addbook.php">Add Book</a></button>
-
-```
 <form method="GET" action="viewbook.php">
     <input type="text" name="search" placeholder="Search by title" value="<?= htmlspecialchars($search) ?>">
 
@@ -68,7 +66,5 @@ $genres = $bookObj->getGenres();
         </tr>
     <?php endif; ?>
 </table>
-```
-
 </body>
 </html>

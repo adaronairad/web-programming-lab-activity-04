@@ -71,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button><a href="viewbook.php">Back to List</a></button>
     <br><br>
 
-```
 <?php if (!empty($message)): ?>
     <p style="color:red;"><?= htmlspecialchars($message) ?></p>
 <?php endif; ?>
@@ -101,7 +100,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <br><br>
     <input type="submit" value="Save Book">
 </form>
-```
 
 </body>
 </html>

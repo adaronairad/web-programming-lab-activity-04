@@ -85,8 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET["id"])) {
         <label for="title">Title <span>*</span></label>
         <input type="text" name="title" id="title" value="<?= htmlspecialchars($book["title"]) ?>">
         <p class="error"><?= $errors["title"] ?></p>
-
-```
     <label for="author">Author <span>*</span></label>
     <input type="text" name="author" id="author" value="<?= htmlspecialchars($book["author"]) ?>">
     <p class="error"><?= $errors["author"] ?></p>
@@ -107,7 +105,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET["id"])) {
     <br><br>
     <input type="submit" value="Update Book">
 </form>
-```
 
 </body>
 </html>
