@@ -4,9 +4,27 @@ $bookObj = new Book();
 
 $book = ["title"=>"", "author"=>"", "genre"=>"", "publication_year"=>""];
 $errors = ["title"=>"", "author"=>"", "genre"=>"", "publication_year"=>""];
-$message = "";
+$bid = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Handle GET (load book data)
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    if (isset($_GET["id"])) {
+        $bid = trim(htmlspecialchars($_GET["id"]));
+        $book = $bookObj->fetchBook($bid);
+        if (!$book) {
+            echo "<a href='viewbook.php'>View Book</a>";
+            exit("No book found");
+        }
+    } else {
+        echo "<a href='viewbook.php'>View Book</a>";
+        exit("No book found");
+    }
+}
+
+// Handle POST (update book)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET["id"])) {
+    $bid = trim(htmlspecialchars($_GET["id"]));
+
     $book["title"] = trim(htmlspecialchars($_POST["title"]));
     $book["author"] = trim(htmlspecialchars($_POST["author"]));
     $book["genre"] = trim(htmlspecialchars($_POST["genre"]));
@@ -15,18 +33,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validation
     if (empty($book["title"])) {
         $errors["title"] = "Title is required";
-    } elseif ($bookObj->isBookExist($book["title"])) {
-        $errors["title"] = "This book title already exists.";
     }
-
     if (empty($book["author"])) {
         $errors["author"] = "Author is required";
     }
-
     if (empty($book["genre"])) {
         $errors["genre"] = "Please select a genre";
     }
-
     if (empty($book["publication_year"])) {
         $errors["publication_year"] = "Publication year is required";
     } elseif (!is_numeric($book["publication_year"])) {
@@ -42,11 +55,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $bookObj->genre = $book["genre"];
         $bookObj->publication_year = $book["publication_year"];
 
-        if ($bookObj->addBook()) {
-            header("Location: viewbook.php?msg=Book added successfully");
+        if ($bookObj->editBook($bid)) {
+            header("Location: viewbook.php");
             exit;
         } else {
-            $message = "Error saving book.";
+            echo "Error updating book.";
         }
     }
 }
@@ -58,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Book</title>
+    <title>Edit Book</title>
     <style>
         label{ display: block; margin-top: 10px; }
         span{ color: red; }
@@ -66,40 +79,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <h1>Add Book</h1>
+    <h1>Edit Book</h1>
     <label>Fields with <span>*</span> are required</label>
-    <button><a href="viewbook.php">Back to List</a></button>
-    <br><br>
+    <form action="" method="post">
+        <label for="title">Title <span>*</span></label>
+        <input type="text" name="title" id="title" value="<?= htmlspecialchars($book["title"]) ?>">
+        <p class="error"><?= $errors["title"] ?></p>
 
 ```
-<?php if (!empty($message)): ?>
-    <p style="color:red;"><?= htmlspecialchars($message) ?></p>
-<?php endif; ?>
-
-<form action="" method="post">
-    <label for="title">Title <span>*</span></label>
-    <input type="text" name="title" id="title" value="<?= $book["title"] ?>">
-    <p class="error"><?= $errors["title"] ?></p>
-
     <label for="author">Author <span>*</span></label>
-    <input type="text" name="author" id="author" value="<?= $book["author"] ?>">
+    <input type="text" name="author" id="author" value="<?= htmlspecialchars($book["author"]) ?>">
     <p class="error"><?= $errors["author"] ?></p>
 
     <label for="genre">Genre <span>*</span></label>
     <select name="genre" id="genre">
         <option value="">--Select--</option>
-        <option value="History" <?= ($book["genre"] == "History")? "selected":"" ?>>History</option>
-        <option value="Science" <?= ($book["genre"] == "Science")? "selected":"" ?>>Science</option>
-        <option value="Fiction" <?= ($book["genre"] == "Fiction")? "selected":"" ?>>Fiction</option>
+        <option value="History" <?= ($book["genre"] == "History") ? "selected" : "" ?>>History</option>
+        <option value="Science" <?= ($book["genre"] == "Science") ? "selected" : "" ?>>Science</option>
+        <option value="Fiction" <?= ($book["genre"] == "Fiction") ? "selected" : "" ?>>Fiction</option>
     </select>
     <p class="error"><?= $errors["genre"] ?></p>
 
     <label for="publication_year">Publication Year <span>*</span></label>
-    <input type="number" name="publication_year" id="publication_year" value="<?= $book["publication_year"] ?>">
+    <input type="number" name="publication_year" id="publication_year" value="<?= htmlspecialchars($book["publication_year"]) ?>">
     <p class="error"><?= $errors["publication_year"] ?></p>
 
     <br><br>
-    <input type="submit" value="Save Book">
+    <input type="submit" value="Update Book">
 </form>
 ```
 

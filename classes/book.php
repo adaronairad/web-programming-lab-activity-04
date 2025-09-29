@@ -59,4 +59,57 @@ class Book {
         $stmt = $this->db->connect()->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // Edit book
+    public function editBook($bid) {
+        $sql = "UPDATE book 
+                SET title = :title, author = :author, genre = :genre, publication_year = :publication_year 
+                WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+
+        $query->bindParam(":title", $this->title);
+        $query->bindParam(":author", $this->author);
+        $query->bindParam(":genre", $this->genre);
+        $query->bindParam(":publication_year", $this->publication_year);
+        $query->bindParam(":id", $bid);
+
+        return $query->execute();
+    }
+
+    // Delete book
+    public function deleteBook($bid) {
+        $sql = "DELETE FROM book WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(":id", $bid);
+        return $query->execute();
+    }
+
+    // Fetch single book
+    public function fetchBook($bid) {
+        $sql = "SELECT * FROM book WHERE id = :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(":id", $bid);
+
+        if ($query->execute()) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return null;
+        }
+    }
+
+    // Check if book already exists (by title, ignoring current ID)
+    public function isBookExist($btitle, $bid = "") {
+        $sql = "SELECT COUNT(*) AS total FROM book WHERE title = :title AND id <> :id";
+        $query = $this->db->connect()->prepare($sql);
+        $query->bindParam(":title", $btitle);
+        $query->bindParam(":id", $bid);
+
+        if ($query->execute()) {
+            $record = $query->fetch(PDO::FETCH_ASSOC);
+            return $record["total"] > 0;
+        }
+
+        return false;
+    }
 }
+?>
